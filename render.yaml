@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: asset-optimizer
+    env: docker
+    plan: free
+    region: singapore
+    branch: main
+    numInstances: 1
+    healthCheckPath: /
+    autoDeploy: true
