@@ -158,7 +158,7 @@
 
         .options-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 1rem;
             margin-top: 1.5rem;
             text-align: left;
@@ -296,10 +296,6 @@
                     <option value="high">High (PC/Console)</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="max-width">Max Width (px)</label>
-                <input type="number" id="max-width" placeholder="Default" min="100">
-            </div>
         </div>
 
         <button class="btn" id="upload-btn" disabled>Optimize Now 🚀</button>
@@ -434,12 +430,8 @@
 
             // Append Options
             const level = document.getElementById('quality-level').value;
-            const width = document.getElementById('max-width').value;
 
             formData.append('level', level);
-            if (width) {
-                formData.append('width', width);
-            }
 
             uploadBtn.disabled = true;
             showStatus('Uploading & Processing...', 'loading');
