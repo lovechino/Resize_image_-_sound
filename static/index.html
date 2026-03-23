@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Maximizer</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         :root {
             --primary: #6366f1;
             --primary-hover: #4f46e5;
@@ -44,6 +49,7 @@
             font-weight: 700;
             background: linear-gradient(to right, #818cf8, #c084fc);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -64,7 +70,8 @@
             overflow: hidden;
         }
 
-        .upload-area:hover, .upload-area.dragover {
+        .upload-area:hover,
+        .upload-area.dragover {
             border-color: var(--primary);
             background: rgba(99, 102, 241, 0.05);
         }
@@ -92,6 +99,7 @@
             width: 100%;
             margin-top: 1.5rem;
             font-size: 1rem;
+            text-align: center;
         }
 
         .btn:hover {
@@ -125,11 +133,18 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
-        .success-msg { color: var(--success); }
-        .error-msg { color: var(--error); }
+        .success-msg {
+            color: var(--success);
+        }
+
+        .error-msg {
+            color: var(--error);
+        }
 
         .file-info {
             display: none;
@@ -140,135 +155,368 @@
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
         }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        select,
+        input[type="number"] {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        select:focus,
+        input[type="number"]:focus {
+            border-color: var(--primary);
+        }
+
+        .result-area {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .stats-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .stat-arrow {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .stat-saved {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: block;
+            text-decoration: none;
+            line-height: 1.5;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            margin-top: 0.75rem;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>Asset Maximizer</h1>
-    <p>Optimize your game assets (Images & Audio) instantly.</p>
+    <div class="container">
+        <h1>Asset Maximizer</h1>
+        <p>Optimize your game assets (Images & Audio) instantly.</p>
 
-    <div class="upload-area" id="drop-zone">
-        <span class="upload-icon">📁</span>
-        <span id="drop-text">Drag & Drop ZIP file here<br>or click to browse</span>
-        <input type="file" id="file-input" class="file-input" accept=".zip">
+        <div class="upload-area" id="drop-zone">
+            <span class="upload-icon">📁</span>
+            <span id="drop-text">Drag & Drop files here<br>or click to browse</span>
+            <input type="file" id="file-input" class="file-input" multiple>
+        </div>
+
+        <div class="file-info" id="file-info"></div>
+
+        <div class="options-container">
+            <div class="form-group">
+                <label for="quality-level">Quality Level</label>
+                <select id="quality-level">
+                    <option value="low">Low (Web/Mobile)</option>
+                    <option value="medium" selected>Medium (Standard)</option>
+                    <option value="high">High (PC/Console)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="max-width">Max Width (px)</label>
+                <input type="number" id="max-width" placeholder="Default" min="100">
+            </div>
+        </div>
+
+        <button class="btn" id="upload-btn" disabled>Optimize Now 🚀</button>
+
+        <div class="result-area" id="result-area" style="display: none;">
+            <h2 id="result-title">Optimized Successfully! 🎉</h2>
+
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-label">Original</span>
+                    <span class="stat-value" id="stat-original">0 KB</span>
+                </div>
+                <div class="stat-arrow">➜</div>
+                <div class="stat-item">
+                    <span class="stat-label">Optimized</span>
+                    <span class="stat-value" id="stat-optimized">0 KB</span>
+                </div>
+                <div class="stat-saved">
+                    Saved <span id="stat-percent">0%</span>
+                </div>
+            </div>
+
+            <a id="download-link" class="btn btn-download">Download Optimized Assets 📥</a>
+            <button class="btn btn-secondary" id="back-btn">Optimize More Files 🔄</button>
+        </div>
+
+        <div class="status">
+            <div class="spinner" id="spinner"></div>
+            <span id="status-text"></span>
+        </div>
     </div>
 
-    <div class="file-info" id="file-info"></div>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const uploadBtn = document.getElementById('upload-btn');
+        const statusText = document.getElementById('status-text');
+        const spinner = document.getElementById('spinner');
+        const fileInfo = document.getElementById('file-info');
+        const dropText = document.getElementById('drop-text');
 
-    <button class="btn" id="upload-btn" disabled>Optimize Now 🚀</button>
+        const resultArea = document.getElementById('result-area');
+        const downloadLink = document.getElementById('download-link');
+        const backBtn = document.getElementById('back-btn');
+        const statOriginal = document.getElementById('stat-original');
+        const statOptimized = document.getElementById('stat-optimized');
+        const statPercent = document.getElementById('stat-percent');
 
-    <div class="status">
-        <div class="spinner" id="spinner"></div>
-        <span id="status-text"></span>
-    </div>
-</div>
+        let selectedFiles = [];
 
-<script>
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const uploadBtn = document.getElementById('upload-btn');
-    const statusText = document.getElementById('status-text');
-    const spinner = document.getElementById('spinner');
-    const fileInfo = document.getElementById('file-info');
-    const dropText = document.getElementById('drop-text');
+        // Drag & Drop events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
 
-    let selectedFile = null;
-
-    // Drag & Drop events
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
-    });
-
-    dropZone.addEventListener('drop', handleDrop, false);
-    dropZone.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', handleFiles);
-
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles({ target: { files: files } });
-    }
-
-    function handleFiles(e) {
-        const file = e.target.files[0];
-        if (file) {
-            if (!file.name.endsWith('.zip')) {
-                showStatus('Only .zip files are allowed!', 'error');
-                return;
-            }
-            selectedFile = file;
-            fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
-            fileInfo.style.display = 'block';
-            dropText.style.display = 'none';
-            uploadBtn.disabled = false;
-            showStatus('', '');
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
-    }
 
-    uploadBtn.addEventListener('click', uploadFile);
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+        });
 
-    async function uploadFile() {
-        if (!selectedFile) return;
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+        });
 
-        const formData = new FormData();
-        formData.append('file', selectedFile);
+        dropZone.addEventListener('drop', handleDrop, false);
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFiles);
+        backBtn.addEventListener('click', resetUI);
 
-        uploadBtn.disabled = true;
-        showStatus('Uploading & Processing...', 'loading');
-        spinner.style.display = 'block';
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles({ target: { files: files } });
+        }
 
-        try {
-            const response = await fetch('/optimize', {
-                method: 'POST',
-                body: formData
-            });
+        function handleFiles(e) {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                selectedFiles = [];
+                let validFiles = 0;
+                let totalSize = 0;
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Upload failed');
+                for (let i = 0; i < files.length; i++) {
+                    selectedFiles.push(files[i]);
+                    validFiles++;
+                    totalSize += files[i].size;
+                }
+
+                if (validFiles > 0) {
+                    fileInfo.textContent = `Selected: ${validFiles} file(s) (${formatBytes(totalSize)})`;
+                    fileInfo.style.display = 'block';
+                    dropText.style.display = 'none';
+                    uploadBtn.disabled = false;
+                    showStatus('', '');
+                }
+            }
+        }
+
+        uploadBtn.addEventListener('click', uploadFile);
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function resetUI() {
+            resultArea.style.display = 'none';
+            dropZone.style.display = 'block';
+            fileInfo.style.display = 'none';
+            dropText.style.display = 'block';
+            uploadBtn.style.display = 'block';
+            uploadBtn.disabled = true;
+            statusText.textContent = '';
+            selectedFiles = [];
+            fileInput.value = '';
+        }
+
+        async function uploadFile() {
+            if (!selectedFiles || selectedFiles.length === 0) return;
+
+            const formData = new FormData();
+            for (let i = 0; i < selectedFiles.length; i++) {
+                formData.append('files', selectedFiles[i]);
             }
 
-            const blob = await response.blob();
-            const downloadUrl = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = downloadUrl;
-            a.download = `optimized_${selectedFile.name}`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(downloadUrl);
-            document.body.removeChild(a);
+            // Append Options
+            const level = document.getElementById('quality-level').value;
+            const width = document.getElementById('max-width').value;
 
-            showStatus('Success! Download started.', 'success');
-        } catch (error) {
-            console.error(error);
-            showStatus(`Error: ${error.message}`, 'error');
-        } finally {
-            spinner.style.display = 'none';
-            uploadBtn.disabled = false;
+            formData.append('level', level);
+            if (width) {
+                formData.append('width', width);
+            }
+
+            uploadBtn.disabled = true;
+            showStatus('Uploading & Processing...', 'loading');
+            spinner.style.display = 'block';
+
+            try {
+                const response = await fetch('/optimize', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Upload failed');
+                }
+
+                // Get stats headers
+                const orgSize = parseInt(response.headers.get('X-Original-Size') || 0);
+                const optSize = parseInt(response.headers.get('X-Optimized-Size') || 0);
+
+                // Calculate percentage
+                let percent = 0;
+                if (orgSize > 0) {
+                    percent = ((orgSize - optSize) / orgSize * 100).toFixed(1);
+                }
+
+                // Get filename from header if available
+                let filename = 'optimized_assets';
+                const disposition = response.headers.get('Content-Disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    const matches = filenameRegex.exec(disposition);
+                    if (matches != null && matches[1]) {
+                        filename = matches[1].replace(/['"]/g, '');
+                    }
+                } else {
+                    // Fallback based on content type
+                    const contentType = response.headers.get('content-type');
+                    if (contentType === 'application/zip') {
+                        filename += '.zip';
+                    }
+                }
+
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+
+                // Update Result UI
+                statOriginal.textContent = formatBytes(orgSize);
+                statOptimized.textContent = formatBytes(optSize);
+                statPercent.textContent = percent + '%';
+
+                downloadLink.href = downloadUrl;
+                downloadLink.download = filename;
+
+                // Toggle UI
+                dropZone.style.display = 'none';
+                uploadBtn.style.display = 'none';
+                fileInfo.style.display = 'none';
+                resultArea.style.display = 'block';
+
+                showStatus('', 'success');
+            } catch (error) {
+                console.error(error);
+                showStatus(`Error: ${error.message}`, 'error');
+                uploadBtn.disabled = false;
+            } finally {
+                spinner.style.display = 'none';
+            }
         }
-    }
 
-    function showStatus(msg, type) {
-        statusText.textContent = msg;
-        statusText.className = '';
-        if (type === 'error') statusText.classList.add('error-msg');
-        if (type === 'success') statusText.classList.add('success-msg');
-    }
-</script>
-
+        function showStatus(msg, type) {
+            statusText.textContent = msg;
+            statusText.className = '';
+            if (type === 'error') statusText.classList.add('error-msg');
+            if (type === 'success') statusText.classList.add('success-msg');
+        }
+    </script>
 </body>
+
 </html>
