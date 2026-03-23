@@ -36,7 +36,8 @@ class AssetPipeline:
 
                 if ext in ['jpg', 'jpeg', 'png'] and 'image' in file_types:
                     success = self.img_optimizer.optimize(input_path, output_path)
-                elif ext == 'mp3' and 'audio' in file_types:
+                elif ext in ['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac'] and 'audio' in file_types:
+                    output_path = os.path.splitext(output_path)[0] + '.mp3'
                     success = self.audio_optimizer.optimize(input_path, output_path)
                 
                 if success:

@@ -20,6 +20,7 @@ class AudioOptimizer(BaseOptimizer):
             self.ensure_dir(output_path)
             cmd = [
                 'ffmpeg', '-i', input_path,
+                '-vn', # Drop any video stream like album art
                 '-codec:a', 'libmp3lame',
                 '-b:a', self.config.audio_bitrate,
                 '-ac', '1', # Force Mono
